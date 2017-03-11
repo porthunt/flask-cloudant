@@ -1,0 +1,32 @@
+# Flask-Cloudant
+
+Adds Cloudant support to Flask. Built on top of [python-cloudant](https://github.com/cloudant/python-cloudant).
+
+### Installing
+
+```
+pip install flask-cloudant
+```
+
+### Configuring
+
+Use your Cloudant credentials on the Flask config. Set your info like this:
+
+```python
+CLOUDANT_USER = "your-cloudant-username"
+CLOUDANT_PWD = "your-cloudant-password"
+CLOUDANT_ACCOUNT = "your-cloudant-account"
+```
+
+> If you don't define your `CLOUDANT_ACCOUNT`, Flask-Cloudant will use the `CLOUDANT_USER` as the account.
+
+### Let's use it
+
+```python
+from flask import Flask
+from flask_cloudant import FlaskCloudant
+
+
+app = Flask(__name__)
+store_cloudant = FlaskCloudant(app)
+```

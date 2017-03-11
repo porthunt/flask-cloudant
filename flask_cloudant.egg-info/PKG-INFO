@@ -1,0 +1,53 @@
+Metadata-Version: 1.1
+Name: flask-cloudant
+Version: 0.0.1.dev0
+Summary: Flask Cloudant Interface
+Home-page: https://github.com/porthunt/flask-cloudant
+Author: porthunt
+Author-email: jportela.gomez@gmail.com
+License: UNKNOWN
+Description: # Flask-Cloudant
+        
+        Adds Cloudant support to Flask. Built on top of [python-cloudant](https://github.com/cloudant/python-cloudant).
+        
+        ### Installing
+        
+        ```
+        pip install flask-cloudant
+        ```
+        
+        ### Configuring
+        
+        Use your Cloudant credentials on the Flask config. Set your info like this:
+        
+        ```python
+        CLOUDANT_USER = "your-cloudant-username"
+        CLOUDANT_PWD = "your-cloudant-password"
+        CLOUDANT_ACCOUNT = "your-cloudant-account"
+        ```
+        
+        > If you don't define your `CLOUDANT_ACCOUNT`, Flask-Cloudant will use the `CLOUDANT_USER` as the account.
+        
+        ### Let's use it
+        
+        ```python
+        from flask import Flask
+        from flask_cloudant import FlaskCloudant
+        
+        
+        app = Flask(__name__)
+        store_cloudant = FlaskCloudant(app)
+        ```
+        
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Topic :: Software Development :: Libraries :: Python Module
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 1 - Production/Stable
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
