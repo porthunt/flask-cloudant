@@ -5,11 +5,16 @@ Module for some common exceptions for the library.
 '''
 ERROR_MSG = {
     100: "General error occurred.",
-    101: "Cloudant Library not installed. Please install it using 'pip install cloudant'.",
+    101: ("Cloudant Library not installed. Please install it"
+          " using 'pip install cloudant'."),
+    102: "You must provide login credentials.",
     400: "Databases '{0}' does not exists.",
     401: "Unauthorized. The credentials are not valid.",
-    503: "Service unavailable. User '{0}' not found."
+    404: "Document '{0}' does not exist.",
+    503: "Service unavailable. User '{0}' not found.",
+    700: "{0} must be {1}."
 }
+
 
 class FlaskCloudantException(Exception):
     '''
