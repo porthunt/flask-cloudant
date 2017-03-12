@@ -1,5 +1,5 @@
 # Flask-Cloudant
-
+## Work in progress!
 Adds Cloudant support to Flask. Built on top of [python-cloudant](https://github.com/cloudant/python-cloudant).
 
 ### Installing
