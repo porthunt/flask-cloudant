@@ -2,7 +2,6 @@
 from flask_cloudant.error import FlaskCloudantException
 from requests.exceptions import HTTPError
 from cloudant.error import CloudantClientException
-from types import DictType
 
 try:
     import cloudant
@@ -81,7 +80,7 @@ class FlaskCloudant(object):
         try:
             doc.content(content)
         except AssertionError:
-            raise FlaskCloudantException(700, 'Content', DictType)
+            raise FlaskCloudantException(700, 'Content', dict)
         doc.save()
         self.__disconnect__()
 
@@ -136,7 +135,7 @@ class FlaskCloudantDocument(object):
         if content is None:
             return self.document
         else:
-            assert type(content) is DictType
+            assert type(content) is dict
             for key, value in content.iteritems():
                 self.document.field_set(self.document, key, value)
 
