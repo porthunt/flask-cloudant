@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from error import FlaskCloudantException
+from flask_cloudant.error import FlaskCloudantException
 from requests.exceptions import HTTPError
 from cloudant.error import CloudantClientException
 from types import DictType
