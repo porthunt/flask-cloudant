@@ -145,7 +145,7 @@ class FlaskCloudantDocument(object):
         if content is None:
             return dict(self.document)
         else:
-            assert type(content) is DictType
+            assert type(content) is dict
             for key, value in content.iteritems():
                 self.document.field_set(self.document, key, value)
 
