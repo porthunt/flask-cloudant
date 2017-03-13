@@ -65,7 +65,7 @@ class FlaskCloudant(object):
         self.__disconnect__()
         return doc
 
-    def put(self, content, document_id=None):
+    def put(self, content, document_id=None, override=False):
         """
         Creates a document on the database using the
         dictionary passed as paramenter.
@@ -75,15 +75,24 @@ class FlaskCloudant(object):
             Default: None. Cloudant will generate its own _id.
         """
         self.__connect__()
-        doc = FlaskCloudantDocument(cloudant.document.Document(self._db,
-                                                               document_id),
-                                    exists=False)
+        cloudant_doc = cloudant.document.Document(self._db, document_id)
+
+        if cloudant_doc.exists() and not override:
+            raise FlaskCloudantException(405, cloudant_doc['_id'])
+        elif cloudant_doc.exists() and override:
+            cloudant_doc.fetch()
+            cloudant_doc.delete()
+
+        doc = FlaskCloudantDocument(cloudant_doc, exists=False)
+
         try:
             doc.content(content)
         except AssertionError:
             raise FlaskCloudantException(700, 'Content', DictType)
+
         doc.save()
         self.__disconnect__()
+        return doc
 
     def delete(self, document_id):
         """
@@ -134,11 +143,14 @@ class FlaskCloudantDocument(object):
             simply return the content from the current document.
         """
         if content is None:
-            return self.document
+            return dict(self.document)
         else:
             assert type(content) is DictType
             for key, value in content.iteritems():
                 self.document.field_set(self.document, key, value)
+
+    def exists(self):
+        return self.document.exists()
 
     def save(self):
         """
