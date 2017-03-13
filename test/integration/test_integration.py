@@ -17,4 +17,4 @@ def app():
 
 def test_constructor(app):
     storage = FlaskCloudant(app)
-    assert storage._client is not None
+    assert storage.CLIENT is not None

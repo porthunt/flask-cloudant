@@ -23,6 +23,8 @@ class FlaskCloudant(object):
     :param str app: Flask app initialized with `Flask(__name__)`.
     """
 
+    CLIENT = None
+
     def __init__(self, app=None, **kwargs):
         if app is not None:
             self.__init_app__(app)
@@ -31,18 +33,17 @@ class FlaskCloudant(object):
         """
         Initializes the connection using the settings from `config.py`.
         """
-        self._client = None
         cloudant_user = app.config.get('CLOUDANT_USER')
         cloudant_pwd = app.config.get('CLOUDANT_PWD')
         cloudant_account = app.config.get('CLOUDANT_ACCOUNT', cloudant_user)
         cloudant_database = app.config.get('CLOUDANT_DB')
 
         try:
-            self._client = cloudant.Cloudant(cloudant_user,
-                                             cloudant_pwd,
-                                             account=cloudant_account)
+            FlaskCloudant.CLIENT = cloudant.Cloudant(cloudant_user,
+                                                     cloudant_pwd,
+                                                     account=cloudant_account)
             self.__connect__()
-            self._db = self._client[cloudant_database]
+            self._db = FlaskCloudant.CLIENT[cloudant_database]
             self.__disconnect__()
         except CloudantClientException as ex:
             raise FlaskCloudantException(ex.status_code)
@@ -106,10 +107,10 @@ class FlaskCloudant(object):
         self.__disconnect__()
 
     def __connect__(self):
-        self._client.connect()
+        FlaskCloudant.CLIENT.connect()
 
     def __disconnect__(self):
-        self._client.disconnect()
+        FlaskCloudant.CLIENT.disconnect()
 
 
 class FlaskCloudantDocument(object):
@@ -150,7 +151,10 @@ class FlaskCloudantDocument(object):
                 self.document.field_set(self.document, key, value)
 
     def exists(self):
-        return self.document.exists()
+        FlaskCloudant.CLIENT.connect()
+        exists = self.document.exists()
+        FlaskCloudant.CLIENT.disconnect()
+        return exists
 
     def save(self):
         """
