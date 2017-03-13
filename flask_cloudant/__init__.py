@@ -2,7 +2,6 @@
 from flask_cloudant.error import FlaskCloudantException
 from requests.exceptions import HTTPError
 from cloudant.error import CloudantClientException
-from types import dict
 
 try:
     import cloudant
