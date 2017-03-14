@@ -36,7 +36,7 @@ def test_put_override(app):
                   override=True)
     assert doc.content()['test'] == 'test_put_fails'
     # moving back to its original state
-    app.put({'test': 'test_put'},
+    app.put({'test': 0},
             '3a6999acddc088784398b8ce62be7972',
             override=True)
 
