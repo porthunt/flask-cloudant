@@ -89,7 +89,6 @@ class FlaskCloudant(object):
             doc.content(content)
         except AssertionError:
             raise FlaskCloudantException(700, 'Content', dict)
-
         doc.save()
         self.__disconnect__()
         return doc
