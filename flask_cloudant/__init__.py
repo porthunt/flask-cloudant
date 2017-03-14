@@ -2,7 +2,6 @@
 from flask_cloudant.error import FlaskCloudantException
 from requests.exceptions import HTTPError
 from cloudant.error import CloudantClientException
-from future.utils import viewitems
 
 try:
     import cloudant
@@ -146,7 +145,7 @@ class FlaskCloudantDocument(object):
             return dict(self.document)
         else:
             assert type(content) is dict
-            for key, value in viewitems(content):
+            for key, value in iteritems():
                 self.document.field_set(self.document, key, value)
 
     def exists(self):
