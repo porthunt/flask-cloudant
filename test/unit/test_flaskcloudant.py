@@ -26,16 +26,23 @@ def test_get_not_existing(app):
 
 def test_put(app):
     with pytest.raises(FlaskCloudantException) as ex:
-        app.put({'test': 0}, '3a6999acddc088784398b8ce62be7972')
+        app.put({'test': 'test_put'},
+                '3a6999acddc088784398b8ce62be7972')
     assert ex.value.status_code == 405
 
 def test_put_override(app):
-    doc = app.put({'test': 123}, '3a6999acddc088784398b8ce62be7972',
+    doc = app.put({'test': 'test_put_fails'},
+                  '3a6999acddc088784398b8ce62be7972',
                   override=True)
-    assert doc.content()['test'] == 123
+    assert doc.content()['test'] == 'test_put_fails'
+    # moving back to its original state
+    app.put({'test': 'test_put'},
+            '3a6999acddc088784398b8ce62be7972',
+            override=True)
+
 
 def test_delete(app):
-    doc = app.put({'test': 'delete'})
+    doc = app.put({'test': 'test-to-delete'})
     assert doc.exists()
-    #doc.delete(doc.content()['_id'])
-    #assert not doc.exists()
+    app.delete(doc.content()['_id'])
+    assert not doc.exists()
