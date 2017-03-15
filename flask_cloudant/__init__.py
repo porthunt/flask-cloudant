@@ -145,7 +145,7 @@ class FlaskCloudantDocument(object):
             return dict(self.document)
         else:
             assert type(content) is dict
-            for key, value in content.iteritems():
+            for key, value in content.items():
                 self.document.field_set(self.document, key, value)
 
     def exists(self):
