@@ -4,6 +4,7 @@ Unit tests.
 '''
 
 import flask
+import uuid
 from flask_cloudant import FlaskCloudant
 from flask_cloudant.error import FlaskCloudantException
 import pytest
@@ -15,34 +16,36 @@ def app():
     storage = FlaskCloudant(_app_)
     return storage
 
-def test_get_existing(app):
-    doc = app.get('f8d43659205e0ba4f37ed26f71074333')
-    assert type(doc.content()) is dict
+@pytest.fixture
+def doc(app):
+    doc = app.put({'test': uuid.uuid4().hex})
+    return doc.content()['_id']
+
+def test_get_existing(app, doc):
+    doc_file = app.get(doc)
+    assert type(doc_file.content()) is dict
+    # removing the created doc
+    app.delete(doc)
 
 def test_get_not_existing(app):
     with pytest.raises(FlaskCloudantException) as ex:
         app.get('random-not-existing-id')
     assert ex.value.status_code == 404
 
-def test_put(app):
+def test_put(app, doc):
     with pytest.raises(FlaskCloudantException) as ex:
-        app.put({'test': 'test_put'},
-                '3a6999acddc088784398b8ce62be7972')
+        app.put({'test': 'test_put'}, doc)
     assert ex.value.status_code == 405
 
-def test_put_override(app):
-    doc = app.put({'test': 'test_put_fails'},
-                  '3a6999acddc088784398b8ce62be7972',
-                  override=True)
-    assert doc.content()['test'] == 'test_put_fails'
-    # moving back to its original state
-    app.put({'test': 0},
-            '3a6999acddc088784398b8ce62be7972',
-            override=True)
+def test_put_override(app, doc):
+    doc_file = app.put({'test': 'test'}, doc,  override=True)
+    assert doc_file.content()['test'] == 'test'
+    # removing the created doc
+    app.delete(doc)
 
 
-def test_delete(app):
-    doc = app.put({'test': 'test-to-delete'})
+def test_delete(app, doc):
+    doc = app.put({'test': doc})
     assert doc.exists()
     app.delete(doc.content()['_id'])
     assert not doc.exists()
