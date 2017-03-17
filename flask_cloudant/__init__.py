@@ -104,10 +104,12 @@ class FlaskCloudant(object):
         doc.delete()
         self.__disconnect__()
 
-    def __connect__(self):
+    @staticmethod
+    def __connect__():
         FlaskCloudant.CLIENT.connect()
 
-    def __disconnect__(self):
+    @staticmethod
+    def __disconnect__():
         FlaskCloudant.CLIENT.disconnect()
 
 
@@ -149,9 +151,9 @@ class FlaskCloudantDocument(object):
                 self.document.field_set(self.document, key, value)
 
     def exists(self):
-        FlaskCloudant.CLIENT.connect()
+        FlaskCloudant.__connect__()
         exists = self.document.exists()
-        FlaskCloudant.CLIENT.disconnect()
+        FlaskCloudant.__disconnect__()
         return exists
 
     def save(self):
