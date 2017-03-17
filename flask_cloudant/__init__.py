@@ -22,6 +22,8 @@ class FlaskCloudant(object):
     :param str app: Flask app initialized with `Flask(__name__)`.
     """
 
+    CLIENT = None
+
     def __init__(self, app=None, **kwargs):
         if app is not None:
             self.__init_app__(app)
@@ -30,18 +32,17 @@ class FlaskCloudant(object):
         """
         Initializes the connection using the settings from `config.py`.
         """
-        self._client = None
         cloudant_user = app.config.get('CLOUDANT_USER')
         cloudant_pwd = app.config.get('CLOUDANT_PWD')
         cloudant_account = app.config.get('CLOUDANT_ACCOUNT', cloudant_user)
         cloudant_database = app.config.get('CLOUDANT_DB')
 
         try:
-            self._client = cloudant.Cloudant(cloudant_user,
-                                             cloudant_pwd,
-                                             account=cloudant_account)
+            FlaskCloudant.CLIENT = cloudant.Cloudant(cloudant_user,
+                                                     cloudant_pwd,
+                                                     account=cloudant_account)
             self.__connect__()
-            self._db = self._client[cloudant_database]
+            self._db = FlaskCloudant.CLIENT[cloudant_database]
             self.__disconnect__()
         except CloudantClientException as ex:
             raise FlaskCloudantException(ex.status_code)
@@ -64,7 +65,7 @@ class FlaskCloudant(object):
         self.__disconnect__()
         return doc
 
-    def put(self, content, document_id=None):
+    def put(self, content, document_id=None, override=False):
         """
         Creates a document on the database using the
         dictionary passed as paramenter.
@@ -74,15 +75,23 @@ class FlaskCloudant(object):
             Default: None. Cloudant will generate its own _id.
         """
         self.__connect__()
-        doc = FlaskCloudantDocument(cloudant.document.Document(self._db,
-                                                               document_id),
-                                    exists=False)
+        cloudant_doc = cloudant.document.Document(self._db, document_id)
+
+        if cloudant_doc.exists() and not override:
+            raise FlaskCloudantException(405, cloudant_doc['_id'])
+        elif cloudant_doc.exists() and override:
+            cloudant_doc.fetch()
+            cloudant_doc.delete()
+
+        doc = FlaskCloudantDocument(cloudant_doc, exists=False)
+
         try:
             doc.content(content)
         except AssertionError:
             raise FlaskCloudantException(700, 'Content', dict)
         doc.save()
         self.__disconnect__()
+        return doc
 
     def delete(self, document_id):
         """
@@ -95,11 +104,13 @@ class FlaskCloudant(object):
         doc.delete()
         self.__disconnect__()
 
-    def __connect__(self):
-        self._client.connect()
+    @staticmethod
+    def __connect__():
+        FlaskCloudant.CLIENT.connect()
 
-    def __disconnect__(self):
-        self._client.disconnect()
+    @staticmethod
+    def __disconnect__():
+        FlaskCloudant.CLIENT.disconnect()
 
 
 class FlaskCloudantDocument(object):
@@ -133,11 +144,17 @@ class FlaskCloudantDocument(object):
             simply return the content from the current document.
         """
         if content is None:
-            return self.document
+            return dict(self.document)
         else:
             assert type(content) is dict
-            for key, value in content.iteritems():
+            for key, value in content.items():
                 self.document.field_set(self.document, key, value)
+
+    def exists(self):
+        FlaskCloudant.__connect__()
+        exists = self.document.exists()
+        FlaskCloudant.__disconnect__()
+        return exists
 
     def save(self):
         """

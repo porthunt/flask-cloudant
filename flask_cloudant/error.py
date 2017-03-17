@@ -11,6 +11,7 @@ ERROR_MSG = {
     400: "Databases '{0}' does not exists.",
     401: "Unauthorized. The credentials are not valid.",
     404: "Document '{0}' does not exist.",
+    405: "Document '{0}' already exists.",
     503: "Service unavailable. User '{0}' not found.",
     700: "{0} must be {1}."
 }
