@@ -12,6 +12,9 @@ python:
 - nightly
 install: pip install -r requirements.txt
 script: py.test
+addons:
+    code_climate:
+        repo_token: 8a806a3f54a52b94cee00446ba201e17f7daf1554b73a7ad3a3817e786d210e8
 before_install:
 - openssl aes-256-cbc -K $encrypted_1d6f54ee24e9_key -iv $encrypted_1d6f54ee24e9_iv
   -in credentials.py.enc -out credentials.py -d
