@@ -29,5 +29,6 @@ from flask_cloudant import FlaskCloudant
 
 
 app = Flask(__name__)
+app.config.from_object('config')
 store_cloudant = FlaskCloudant(app)
 ```
