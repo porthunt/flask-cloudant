@@ -1,5 +1,5 @@
 # Flask-Cloudant
-[![Build Status](https://travis-ci.org/porthunt/flask-cloudant.svg?branch=master)](https://travis-ci.org/porthunt/flask-cloudant)
+[![Build Status](https://travis-ci.org/porthunt/flask-cloudant.svg?branch=master)](https://travis-ci.org/porthunt/flask-cloudant) [![Code Climate](https://codeclimate.com/github/porthunt/flask-cloudant/badges/gpa.svg)](https://codeclimate.com/github/porthunt/flask-cloudant)
 
 Adds Cloudant support to Flask. Built on top of [python-cloudant](https://github.com/cloudant/python-cloudant).
 
@@ -29,5 +29,6 @@ from flask_cloudant import FlaskCloudant
 
 
 app = Flask(__name__)
+app.config.from_object('config')
 store_cloudant = FlaskCloudant(app)
 ```
