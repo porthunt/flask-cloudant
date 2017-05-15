@@ -162,17 +162,13 @@ class FlaskCloudantDocument(object):
         """
         Creates the document on the database.
         """
-        FlaskCloudant.__connect__()
         self.document.create()
-        FlaskCloudant.__disconnect__()
 
     def delete(self):
         """
         Deletes the document from the database.
         """
-        FlaskCloudant.__connect__()
         self.document.delete()
-        FlaskCloudant.__disconnect__()
 
     def refresh(self):
         FlaskCloudant.__connect__()

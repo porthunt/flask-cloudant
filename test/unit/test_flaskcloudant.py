@@ -43,7 +43,6 @@ def test_put_override(app, doc):
     # removing the created doc
     app.delete(doc)
 
-
 def test_delete(app, doc):
     doc = app.put({'test': doc})
     assert doc.exists()
