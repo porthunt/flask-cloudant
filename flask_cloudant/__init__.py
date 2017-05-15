@@ -73,6 +73,8 @@ class FlaskCloudant(object):
         :param dict content: The content of your document.
         :param str document_id: _id for your document.
             Default: None. Cloudant will generate its own _id.
+        :param bool override: If a document with document_id already exists
+                              it will override that document.
         """
         self.__connect__()
         cloudant_doc = cloudant.document.Document(self._db, document_id)
@@ -115,8 +117,7 @@ class FlaskCloudant(object):
 
 class FlaskCloudantDocument(object):
     """
-    Creates a FlaskCloudantDocument. If it exists on the database,
-    it will pull the information.
+    Creates a FlaskCloudantDocument.
     """
 
     def __init__(self, cloudant_doc, exists=True):
@@ -144,6 +145,7 @@ class FlaskCloudantDocument(object):
             simply return the content from the current document.
         """
         if content is None:
+            self.refresh();
             return dict(self.document)
         else:
             assert type(content) is dict
@@ -160,13 +162,22 @@ class FlaskCloudantDocument(object):
         """
         Creates the document on the database.
         """
+        FlaskCloudant.__connect__()
         self.document.create()
+        FlaskCloudant.__disconnect__()
 
     def delete(self):
         """
         Deletes the document from the database.
         """
+        FlaskCloudant.__connect__()
         self.document.delete()
+        FlaskCloudant.__disconnect__()
+
+    def refresh(self):
+        FlaskCloudant.__connect__()
+        self.document.fetch()
+        FlaskCloudant.__disconnect__()
 
 
 class FlaskCloudantView(object):
